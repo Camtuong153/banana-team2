@@ -6,8 +6,8 @@
     <title>Rule Server</title>
     <!-- Thư viện đọc file Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Thư viện Captcha Turnstile -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- Thư viện Cloudflare Turnstile Captcha (Chế độ render trực tiếp) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #1a1a1d; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -25,7 +25,7 @@
         .popup-img { width: 65px; height: 65px; object-fit: contain; margin-bottom: 10px; }
         .close-btn { position: absolute; top: 10px; right: 15px; color: #aaa; font-size: 24px; cursor: pointer; }
         .close-btn:hover { color: #fff; }
-        .captcha-container { margin: 20px 0; display: flex; justify-content: center; }
+        .captcha-container { margin: 20px 0; min-height: 65px; display: flex; justify-content: center; align-items: center; width: 100%; }
         .btn-discord { display: none; background-color: #27ae60; color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; transition: 0.3s; }
         .btn-discord:hover { background-color: #219150; }
     </style>
@@ -52,7 +52,7 @@
     </div>
 
     <script>
-        // Render tự động thay thế các biến RENDER_ENV_ khi deploy
+        // Render tự động thay thế các biến khi deploy
         const CONFIG = {
             CAPTCHA: "RENDER_ENV_CAPTCHA",
             LINKPHOTO: "RENDER_ENV_LINKPHOTO",
@@ -65,11 +65,24 @@
         document.getElementById('popup-photo').src = CONFIG.LINKPHOTO;
         document.getElementById('discord-link').href = CONFIG.DISCORDBOT;
 
-        // Khởi tạo Captcha Turnstile
-        window.onload = function() {
-            if (window.turnstile) {
-                turnstile.render('#turnstile-widget', {
+        // Đọc nội dung file Markdown
+        fetch(CONFIG.LINKTEXT)
+            .then(res => res.text())
+            .then(data => { document.getElementById('rule-content').innerHTML = marked.parse(data); })
+            .catch(() => { document.getElementById('rule-content').innerHTML = "<p style='color:red;'>Lỗi tải nội dung quy định.</p>"; });
+
+        // Xử lý sự kiện Modal Popup & Captcha Render
+        const modal = document.getElementById('captcha-modal');
+        let widgetId = null;
+
+        document.getElementById('apply-btn').onclick = () => {
+            modal.style.display = 'flex';
+            
+            // Tải Captcha khi mở Popup
+            if (window.turnstile && widgetId === null) {
+                widgetId = turnstile.render('#turnstile-widget', {
                     sitekey: CONFIG.CAPTCHA,
+                    theme: 'dark',
                     callback: function(token) {
                         document.getElementById('discord-link').style.display = 'inline-block';
                     }
@@ -77,15 +90,6 @@
             }
         };
 
-        // Đọc nội dung file Markdown
-        fetch(CONFIG.LINKTEXT)
-            .then(res => res.text())
-            .then(data => { document.getElementById('rule-content').innerHTML = marked.parse(data); })
-            .catch(() => { document.getElementById('rule-content').innerHTML = "<p style='color:red;'>Lỗi tải nội dung quy định.</p>"; });
-
-        // Xử lý sự kiện Modal Popup
-        const modal = document.getElementById('captcha-modal');
-        document.getElementById('apply-btn').onclick = () => modal.style.display = 'flex';
         document.getElementById('close-modal').onclick = () => modal.style.display = 'none';
         window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
     </script>
