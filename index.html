@@ -6,8 +6,8 @@
     <title>Rule Server</title>
     <!-- Thư viện đọc file Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Thư viện Cloudflare Turnstile Captcha (Chế độ render trực tiếp) -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <!-- Thư viện Cloudflare Turnstile Captcha -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #1a1a1d; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -45,16 +45,16 @@
             <h3>Xác thực người dùng</h3>
             <p style="font-size: 14px; color: #ccc; margin-top: 5px;">Vui lòng hoàn thành captcha để tiếp tục</p>
             <div class="captcha-container">
-                <div id="turnstile-widget"></div>
+                <!-- Sử dụng class cf-turnstile tự động nhận diện -->
+                <div class="cf-turnstile" id="turnstile-widget" data-sitekey="RENDER_ENV_CAPTCHA" data-theme="dark" data-callback="onTurnstileSuccess"></div>
             </div>
             <a href="#" id="discord-link" class="btn-discord" target="_blank">Tham gia Discord</a>
         </div>
     </div>
 
     <script>
-        // Render tự động thay thế các biến khi deploy
+        // Cấu hình biến môi trường
         const CONFIG = {
-            CAPTCHA: "RENDER_ENV_CAPTCHA",
             LINKPHOTO: "RENDER_ENV_LINKPHOTO",
             LINKTEXT: "RENDER_ENV_LINKTEXT",
             DISCORDBOT: "RENDER_ENV_DISCORDBOT"
@@ -71,23 +71,15 @@
             .then(data => { document.getElementById('rule-content').innerHTML = marked.parse(data); })
             .catch(() => { document.getElementById('rule-content').innerHTML = "<p style='color:red;'>Lỗi tải nội dung quy định.</p>"; });
 
-        // Xử lý sự kiện Modal Popup & Captcha Render
-        const modal = document.getElementById('captcha-modal');
-        let widgetId = null;
+        // Hàm gọi lại khi xác thực thành công Captcha
+        function onTurnstileSuccess(token) {
+            document.getElementById('discord-link').style.display = 'inline-block';
+        }
 
+        // Mở / Đóng Modal Popup
+        const modal = document.getElementById('captcha-modal');
         document.getElementById('apply-btn').onclick = () => {
             modal.style.display = 'flex';
-            
-            // Tải Captcha khi mở Popup
-            if (window.turnstile && widgetId === null) {
-                widgetId = turnstile.render('#turnstile-widget', {
-                    sitekey: CONFIG.CAPTCHA,
-                    theme: 'dark',
-                    callback: function(token) {
-                        document.getElementById('discord-link').style.display = 'inline-block';
-                    }
-                });
-            }
         };
 
         document.getElementById('close-modal').onclick = () => modal.style.display = 'none';
