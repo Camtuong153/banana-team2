@@ -1,16 +1,23 @@
-[[ SERVER RULE ]]
-​1. Respect Everyone
-Treat all members with courtesy and respect. Harassment, hate speech, discrimination, bullying, and personal attacks will not be tolerated under any circumstances.
-​2. No Spam or Self-Promotion
-Avoid spamming text, emojis, capital letters, or mass tags. Unsolicited direct messages (DMs) to members and unauthorized self-promotion, advertising, or referral links are strictly prohibited.
-​3. Keep Content Safe & Appropriate (NSFW/SFW)
-Do not share Explicit, NSFW, gore, or sexually suggestive content anywhere in this server. Keep all profile pictures, statuses, and usernames appropriate.
-​4. Use the Right Channels
-Ensure your text and media stay in the designated channels (e.g., keep bot commands in #bot-commands and media in #media). Check channel topic descriptions before posting.
-​5. Follow Discord Terms of Service
-All members must adhere to Discord's Terms of Service and Community Guidelines.
-​Enforcement & Staff Policy
-​First Offense: Verbal Warning / Message Deletion
-​Second Offense: Temporary Mute / Timeout
-​Severe/Repeated Offenses: Kick or Permanent Ban
-​Server Staff reserve the right to act on any behavior harmful to the community, even if not explicitly listed above.
+# [[ SERVER RULE ]]
+
+**1. Respect Everyone**
+Treat all members with courtesy and respect. Harassment, hate speech...
+
+**2. No Spam or Self-Promotion**
+Avoid spamming text, emojis, capital letters...
+
+**3. Keep Content Safe & Appropriate (NSFW/SFW)**
+Do not share Explicit, NSFW, gore...
+
+**4. Use the Right Channels**
+Ensure your text and media stay in the designated channels...
+
+**5. Follow Discord Terms of Service**
+All members must adhere to Discord's Terms of Service...
+
+---
+
+### Enforcement & Staff Policy
+* **First Offense:** Verbal Warning / Message Deletion
+* **Second Offense:** Temporary Mute / Timeout
+* **Severe/Repeated Offenses:** Kick or Permanent Ban
