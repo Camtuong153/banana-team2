@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rule Server</title>
-    <!-- Thư viện đọc file Markdown -->
+    <!-- Thư viện Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Cloudflare Turnstile API (render thủ công) -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <!-- Cloudflare Turnstile API -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #1a1a1d; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -15,9 +15,9 @@
         .header-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: -10px; }
         h1 { text-align: center; color: #5865F2; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Bổ sung CSS định dạng nội dung Markdown chi tiết */
+        /* CSS định dạng Markdown hiển thị chuẩn Discord */
         .content-box { background-color: #1e1e21; border: 1px solid #404045; border-radius: 8px; padding: 20px; max-height: 400px; overflow-y: auto; line-height: 1.6; width: 100%; text-align: left; }
-        .content-box h1, .content-box h2, .content-box h3 { margin-top: 15px; margin-bottom: 10px; color: #5865F2; }
+        .content-box h1, .content-box h2, .content-box h3 { margin-top: 15px; margin-bottom: 10px; color: #5865F2; border-bottom: 1px solid #404045; padding-bottom: 5px; }
         .content-box p { margin-bottom: 12px; word-break: break-word; }
         .content-box ul, .content-box ol { margin-left: 25px; margin-bottom: 12px; }
         .content-box li { margin-bottom: 6px; }
@@ -52,27 +52,24 @@
             <h3>Xác thực người dùng</h3>
             <p style="font-size: 14px; color: #ccc; margin-top: 5px;">Vui lòng hoàn thành captcha để tiếp tục</p>
             <div class="captcha-container">
-                <div id="turnstile-widget"></div>
+                <div class="cf-turnstile" data-sitekey="RENDER_ENV_CAPTCHA" data-theme="dark" data-callback="onTurnstileSuccess"></div>
             </div>
             <a href="#" id="discord-link" class="btn-discord" target="_blank">Tham gia Discord</a>
         </div>
     </div>
 
     <script>
-        // Cấu hình biến môi trường
         const CONFIG = {
             LINKPHOTO: "RENDER_ENV_LINKPHOTO",
             LINKTEXT: "RENDER_ENV_LINKTEXT",
-            DISCORDBOT: "RENDER_ENV_DISCORDBOT",
-            SITEKEY: "RENDER_ENV_CAPTCHA"
+            DISCORDBOT: "RENDER_ENV_DISCORDBOT"
         };
 
-        // Gán hình ảnh & liên kết
         document.getElementById('main-photo').src = CONFIG.LINKPHOTO;
         document.getElementById('popup-photo').src = CONFIG.LINKPHOTO;
         document.getElementById('discord-link').href = CONFIG.DISCORDBOT;
 
-        // Đọc và render nội dung file Markdown
+        // Tải văn bản Markdown và render chuẩn danh sách
         fetch(CONFIG.LINKTEXT)
             .then(res => res.text())
             .then(data => { 
@@ -82,37 +79,13 @@
                 document.getElementById('rule-content').innerHTML = "<p style='color:red;'>Lỗi tải nội dung quy định.</p>"; 
             });
 
-        // Callback khi Captcha vượt qua thành công
         function onTurnstileSuccess(token) {
             document.getElementById('discord-link').style.display = 'block';
         }
 
-        // Khởi tạo Captcha thủ công qua JS
-        window.onloadTurnstileCallback = function () {
-            if (CONFIG.SITEKEY && CONFIG.SITEKEY !== "RENDER_ENV_CAPTCHA") {
-                turnstile.render('#turnstile-widget', {
-                    sitekey: CONFIG.SITEKEY,
-                    theme: 'dark',
-                    callback: onTurnstileSuccess,
-                });
-            }
-        };
-
-        // Quản lý Modal Popup
         const modal = document.getElementById('captcha-modal');
-        document.getElementById('apply-btn').onclick = () => {
-            modal.style.display = 'flex';
-            // Render Turnstile nếu chưa load
-            if (window.turnstile && document.getElementById('turnstile-widget').children.length === 0) {
-                turnstile.render('#turnstile-widget', {
-                    sitekey: CONFIG.SITEKEY,
-                    theme: 'dark',
-                    callback: onTurnstileSuccess,
-                });
-            }
-        };
-
-        document.getElementById('close-modal').onclick = () => modal.style.display = 'none';
+        document.getElementById('apply-btn').onclick = () => { modal.style.display = 'flex'; };
+        document.getElementById('close-modal').onclick = () => { modal.style.display = 'none'; };
         window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
     </script>
 </body>
